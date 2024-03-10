@@ -91,6 +91,7 @@ func (s *ParkingLotStorage) CreateParkingLot(totalSpaces int) (*ParkingLot, erro
 		return nil, err
 	}
 
+	var parkingSpaces []ParkingSpace
 	for i := 1; i <= totalSpaces; i++ {
 		_, err := s.db.Exec(`
 			INSERT INTO parking_spaces(lot_id, number)
@@ -101,12 +102,15 @@ func (s *ParkingLotStorage) CreateParkingLot(totalSpaces int) (*ParkingLot, erro
 			log.Fatal(err)
 			return nil, err
 		}
+		parkingSpaces = append(parkingSpaces, ParkingSpace{
+			Number: i,
+		})
 	}
 
 	parkingLot := &ParkingLot{
 		ID:          parkingLotID,
 		TotalSpaces: totalSpaces,
-		Spaces:      make([]ParkingSpace, totalSpaces),
+		Spaces:      parkingSpaces,
 	}
 
 	return parkingLot, nil
